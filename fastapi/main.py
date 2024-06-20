@@ -56,3 +56,18 @@ def get_one_post(id:int):
         # return {"message": f"post with id:{id} not found"}
     print(post)
     return {"post Fetched!": post}
+#delete post
+def find_index(id):
+        for i, p in  enumerate(my_posts):
+            if p['id'] ==id:
+                return i
+
+@app.delete("/posts/{id}",status_code=status.HTTP_204_NO_CONTENT)
+def delete_post (id: int):
+    index = find_index(id)
+    if index == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"post with id:{id} doesn't exist")
+
+    my_posts.pop(index)
+    # here trying to return anything will result in error
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
