@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,Response,status,HTTPException
 from fastapi.params import Body
 from pydantic import BaseModel
 from typing import Optional
@@ -13,9 +13,9 @@ class post(BaseModel):
     
 
 my_posts = [
-    {"title": "title of post 1 ", "content": "content of post 1", "id": 1},
-    {"title": "title of post 2 ", "content": "content of post 2", "id": 2},
-    {"title": "title of post 3 ", "content": "content of post 3", "id": 3},
+    {"title": "title of post 1 ", "content": "content of post 1", 'id':1},
+    {"title": "title of post 2 ", "content": "content of post 2", 'id':2},
+    {"title": "title of post 3 ", "content": "content of post 3", 'id':3},
 ]
 
 
@@ -29,10 +29,30 @@ def get_post():
     return {"your_posts ": my_posts}
 
 
-@app.post("/posts")
+@app.post("/posts",status_code=status.HTTP_201_CREATED)
 def create_post(Post: post):
     my_dict = Post.dict()
     my_dict['id'] = randrange(1,10000000)
     my_posts.append(my_dict)
     # print(f" {my_dict}")
     return {"new post created": my_dict}
+
+# fetching one single post
+def find_post(id):
+    for p in my_posts:
+        if p['id'] == id:
+            return p
+        
+
+@app.get("/posts/{id}")
+def get_one_post(id:int):
+    """ ,response:Response """ #use this parameter in case of second option, dont forget to import
+    post = find_post(id)
+
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"post with id:{id} not found")
+        # OR
+        # response.status_code = status.HTTP_404_NOT_FOUND
+        # return {"message": f"post with id:{id} not found"}
+    print(post)
+    return {"post Fetched!": post}
