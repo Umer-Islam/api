@@ -44,7 +44,7 @@ def find_post(id):
             return p
         
 
-@app.get("/posts/{id}")
+@app.get("/post/{id}")
 def get_one_post(id:int):
     """ ,response:Response """ #use this parameter in case of second option, dont forget to import
     post = find_post(id)
